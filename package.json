@@ -5,7 +5,7 @@
   "main": "dist/billion-challenge.js",
   "type": "module",
   "scripts": {
-    "build": "esbuild src/billion-challenge.ts --bundle --platform=node --target=node18 --outfile=dist/billion-challenge.js --format=esm --minify --sourcemap",
+    "build": "esbuild src/billion-challenge.ts --bundle --platform=node --target=node18 --outfile=dist/billion-challenge.js --format=esm --minify",
     "build:dev": "esbuild src/billion-challenge.ts --bundle --platform=node --target=node18 --outfile=dist/billion-challenge.js --format=esm --sourcemap",
     "dev": "tsx src/billion-challenge.ts",
     "start": "node dist/billion-challenge.js",
