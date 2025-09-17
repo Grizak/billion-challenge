@@ -1,0 +1,41 @@
+{
+  "name": "billion-challenge",
+  "version": "1.0.0",
+  "description": "1 Billion Challenge - High-performance Node.js benchmark suite",
+  "main": "dist/billion-challenge.js",
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/billion-challenge.ts --bundle --platform=node --target=node18 --outfile=dist/billion-challenge.js --format=esm --minify --sourcemap",
+    "build:dev": "esbuild src/billion-challenge.ts --bundle --platform=node --target=node18 --outfile=dist/billion-challenge.js --format=esm --sourcemap",
+    "dev": "tsx src/billion-challenge.ts",
+    "start": "node dist/billion-challenge.js",
+    "test": "node dist/billion-challenge.js",
+    "full": "node --expose-gc --max-old-space-size=8192 dist/billion-challenge.js --full",
+    "benchmark": "node --expose-gc --max-old-space-size=8192 --trace-gc dist/billion-challenge.js --full --verbose",
+    "clean": "rm -rf dist",
+    "setup": "pnpm install && pnpm build",
+    "profile": "node --expose-gc --max-old-space-size=8192 --prof dist/billion-challenge.js --full"
+  },
+  "keywords": [
+    "benchmark",
+    "performance",
+    "nodejs",
+    "typescript",
+    "optimization"
+  ],
+  "author": "Isak Grönlund <gronlundisak11@gmail.com> (isaksweb.xyz)",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Grizak/billion-challenge.git"
+  },
+  "devDependencies": {
+    "@types/node": "^24.5.1",
+    "esbuild": "^0.25.9",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2"
+  }
+}
