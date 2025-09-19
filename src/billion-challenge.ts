@@ -16,20 +16,16 @@ import { performance } from "perf_hooks";
 import { Worker, isMainThread, parentPort, workerData } from "worker_threads";
 import * as os from "os";
 import { fileURLToPath } from "url";
-import { dirname } from "path";
 
 // Handle both ES modules and CommonJS contexts
 let __filename: string;
-let __dirname: string;
 
 if (typeof import.meta !== "undefined" && import.meta.url) {
   // ES modules
   __filename = fileURLToPath(import.meta.url);
-  __dirname = dirname(__filename);
 } else {
   // CommonJS fallback (shouldn't be needed but adds safety)
   __filename = process.argv[1] || "";
-  __dirname = dirname(__filename);
 }
 
 // Configuration interface
@@ -328,6 +324,46 @@ class BillionChallenge {
     if (current >= n) return sum;
     return this.tailRecursive(n, sum + current, current + 1);
   }
+
+  async realisticStressTest(size: number) {
+    console.log(
+      `\n🏋️ Running Realistic Node.js Stress Test (${size.toLocaleString()} items)`
+    );
+
+    const startMem = process.memoryUsage().heapUsed / 1024 / 1024;
+    const startTime = performance.now();
+
+    // Step 1: Create large array with random numbers
+    const arr = new Array(size).fill(0).map(() => Math.random());
+
+    // Step 2: Map operation (CPU-heavy)
+    const squares = arr.map((x) => x * x);
+
+    // Step 3: Reduce operation (CPU-heavy)
+    const sum = squares.reduce((a, b) => a + b, 0);
+
+    // Step 4: Sort operation (CPU + memory)
+    arr.sort((a, b) => a - b);
+
+    // Step 5: JSON serialization (memory + CPU)
+    const json = JSON.stringify(arr.slice(0, 1000)); // slice to avoid huge string in memory
+
+    // Step 6: JSON deserialization
+    const parsed = JSON.parse(json);
+    if (isVerbose)
+      console.log(`Parsed JSON sample: ${parsed.slice(0, 5).join(", ")}`);
+
+    // Final memory and time report
+    const endTime = performance.now();
+    const endMem = process.memoryUsage().heapUsed / 1024 / 1024;
+
+    console.log(`✅ Realistic Test Complete`);
+    console.log(`Time: ${(endTime - startTime).toFixed(2)} ms`);
+    console.log(`Memory Used: ${(endMem - startMem).toFixed(2)} MB`);
+    console.log(
+      `Sum (dummy result to prevent optimizations): ${sum.toFixed(2)}`
+    );
+  }
 }
 
 // Worker thread implementation
@@ -525,6 +561,14 @@ async function main(): Promise<void> {
     ["Cache Friendly", BillionChallenge.cacheFriendly],
     ["Typed Array Optimal", BillionChallenge.typedArrayOptimal],
     ["Parallel Workers", BillionChallenge.parallelWorkers],
+    [
+      "Realistic Stress Test",
+      async (n) => {
+        const challenge = new BillionChallenge();
+        await challenge.realisticStressTest(Math.min(n, 10_000_000));
+        return 0; // Dummy return
+      },
+    ],
   ];
 
   // Add tail recursive only for smaller tests
